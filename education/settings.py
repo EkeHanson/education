@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-e@$-c10&l#1__#^3+s9$ibxq$t1e^tjsfc39#@a^sm*eewjle)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','distachapp.onrender.com', 'dispatch-app-react-v1-ekehanson.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','education-iz3c.onrender.com']
 
 
 # Application definition
