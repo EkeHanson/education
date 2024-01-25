@@ -7,6 +7,58 @@ from rest_framework import status
 from .serializers import CustomUserSerializer, ClassModelSerializer, CourseSerializer
 from .models import CustomUser, Course, ClassModel
 
+
+    
+class CreateCourseView(APIView):
+    def get(self, request):
+        # Query for all Courses within the system
+        users = Course.objects.all()
+        # Serialize the data
+        if users:
+            serializer = CourseSerializer(users, many=True)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data = "Errors", status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        print(request.data)
+        serializer = CourseSerializer(data=request.data)
+        if serializer.is_valid():
+            
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+class CourseRetrieveUpdateDeleteView(APIView):
+    serrializer_class = CourseSerializer
+
+    def get(self, request: Request, course_id:int):
+        classModel = get_object_or_404(Course, pk=course_id)
+
+        serializer = self.serrializer_class(instance=classModel)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request: Request, course_id:int):
+        course = get_object_or_404(Course, pk=course_id)
+        data = request.data
+
+        serializer = self.serrializer_class(instance=course, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            response  = {"message": f"Course {request.data['name']} Updated Successfully to {serializer.data['name']}", "data":serializer.data}
+            return Response(data= response, status=status.HTTP_202_ACCEPTED)
+        
+        return Response(data= serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request: Request, course_id:int):
+        course = get_object_or_404(Course, pk=course_id)
+        course.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class CreateClassModelView(APIView):
     #permission_classes = [IsOwner, IsAdminUser]
     #permission_classes = [IsOwner]
@@ -30,31 +82,40 @@ class CreateClassModelView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class CreateCourseView(APIView):
-    def get(self, request):
-        # Query for all Courses within the system
-        users = Course.objects.all()
-        # Serialize the data
-        if users:
-            serializer = CourseSerializer(users, many=True)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-        return Response(data = "Errors", status=status.HTTP_404_NOT_FOUND)
 
-    def post(self, request):
-        print(request.data)
-        serializer = CourseSerializer(data=request.data)
+
+class ClassRetrieveUpdateDeleteView(APIView):
+    serrializer_class = ClassModelSerializer
+
+    def get(self, request: Request, class_id:int):
+        classModel = get_object_or_404(ClassModel, pk=class_id)
+
+        serializer = self.serrializer_class(instance=classModel)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request: Request, class_id:int):
+        classModel = get_object_or_404(ClassModel, pk=class_id)
+        data = request.data
+
+        serializer = self.serrializer_class(instance=classModel, data=data)
+
         if serializer.is_valid():
-            
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            response = {"message": "Class Updated Successfully", "data":serializer.data}
+            return Response(data= response, status=status.HTTP_202_ACCEPTED)
+        
+        return Response(data= serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request: Request, class_id:int):
+        classModel = get_object_or_404(ClassModel, pk=class_id)
+        classModel.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import CustomUserSerializer  # Make sure to import your serializer
-from .models import ClassModel  # Import your ClassModel model
+    
 
 class CreateUserView(APIView):
     def get(self, request):

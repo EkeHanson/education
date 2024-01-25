@@ -6,6 +6,9 @@ from . import views
 urlpatterns = [
     path('course/', views.CreateCourseView.as_view(), name="create_course"),
     path('class/', views.CreateClassModelView.as_view(), name="create_class"),
+
+    path('course/<int:course_id>/', views.CourseRetrieveUpdateDeleteView.as_view(), name="course_deatils"),
+    path('class/<int:class_id>/', views.ClassRetrieveUpdateDeleteView.as_view(), name="class_details"),
     
     path('create/', views.CreateUserView.as_view(), name="create_user"),
     
