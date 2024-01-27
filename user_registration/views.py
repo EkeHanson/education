@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from .serializers import CustomUserSerializer, ClassModelSerializer, CourseSerializer
-from .models import CustomUser, Course, ClassModel
+from .serializers import CustomUserSerializer, ClassModelSerializer, CourseSerializer, MessageSerializer
+from .models import CustomUser, Course, ClassModel, Message
 
 
     
@@ -233,6 +233,63 @@ class TeachersRetrieveUpdateDeleteView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class CreateMessageView(APIView):
+    def get(self, request):
+        # Query for all users within the system
+        users = Message.objects.all()
+
+        # Serialize the data
+        if users:
+            serializer = MessageSerializer(users, many=True)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data="Errors", status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        # Create a new message
+        serializer = MessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class MessageRetrieveUpdateDeleteView(APIView):
+    def get(self, request, message_id=None):
+        if message_id is not None:
+            # Retrieve a specific message by its ID
+            try:
+                message = Message.objects.get(pk=message_id)
+                serializer = MessageSerializer(message)
+                return Response(serializer.data)
+            except Message.DoesNotExist:
+                return Response({"error": "Message not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, message_id):
+        # Update a message
+        try:
+            message = Message.objects.get(pk=message_id)
+        except Message.DoesNotExist:
+            return Response({"error": "Message not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = MessageSerializer(message, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, message_id):
+        # Delete a message
+        try:
+            message = Message.objects.get(pk=message_id)
+        except Message.DoesNotExist:
+            return Response({"error": "Message not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        message.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 class LoginView(APIView):
     permission_classes = []
 
@@ -242,5 +299,3 @@ class LoginView(APIView):
             "auth": str(request.auth)
             }
         return Response(data=content, status= status.HTTP_200_OK)
-
-

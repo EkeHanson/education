@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, ClassModel, Course
-from rest_framework import serializers
+from .models import CustomUser, ClassModel, Course, Message
 
 class ImageField(serializers.ImageField):
     def to_internal_value(self, data):
@@ -67,3 +66,27 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
+        
+# class MessageSerializer(serializers.ModelSerializer):
+#     replies = serializers.SerializerMethodField()
+
+#     def get_replies(self, obj):
+#         # Recursive serialization to include replies for each message
+#         replies = Message.objects.filter(repliesTo=obj)
+#         return MessageSerializer(replies, many=True).data
+
+#     class Meta:
+#         model = Message
+#         fields = ['id', 'author', 'post', 'created', 'replies', 'repliesTo']
+        
+class MessageSerializer(serializers.ModelSerializer):
+    replies = serializers.SerializerMethodField()
+
+    def get_replies(self, obj):
+        # Fetch only the IDs of messages that reply to the current message
+        replies_ids = Message.objects.filter(repliesTo=obj).values_list('id', flat=True)
+        return list(replies_ids)
+
+    class Meta:
+        model = Message
+        fields = ['id', 'author', 'post', 'created', 'replies', 'repliesTo']

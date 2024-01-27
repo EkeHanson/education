@@ -23,6 +23,22 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+
+class Message(models.Model):
+    author = models.CharField(max_length=255)
+    post = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    replies = models.ManyToManyField('self', blank=True)
+    repliesTo = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        # Split the post into words and take the first 40 words
+        words = self.post.split()[:10]
+        # Join the words back into a string
+        truncated_post = ' '.join(words)
+        return truncated_post
+
+
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     USERNAME_FIELD = 'email'
