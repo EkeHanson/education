@@ -99,7 +99,7 @@ DATABASES = {
     }
 }
 
-# DATABASES['default'] = dj_database_url.parse('postgres://education:TjdM8HtyQnIKSqozvH260zypWja2knrO@dpg-cmp5hlun7f5s73dbv8m0-a.oregon-postgres.render.com/education_f7bp')
+DATABASES['default'] = dj_database_url.parse('postgres://education:TjdM8HtyQnIKSqozvH260zypWja2knrO@dpg-cmp5hlun7f5s73dbv8m0-a.oregon-postgres.render.com/education_f7bp')
 
 
 # Password validation
